@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidSermon(data) {
+      return data.keys().hasAll(['userId', 'title', 'thero', 'category', 'audioUrl', 'createdAt', 'updatedAt'])
+        && data.userId is string && data.userId.size() > 0
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.thero is string && data.thero.size() <= 150
+        && data.category is string && data.category.size() <= 100
+        && data.audioUrl is string && data.audioUrl.size() <= 1000
+        && (!('videoUrl' in data) || (data.videoUrl is string && data.videoUrl.size() <= 1000))
+        && (!('durationSeconds' in data) || data.durationSeconds is int)
+        && (!('description' in data) || (data.description is string && data.description.size() <= 5000))
+        && (!('paliVerses' in data) || (data.paliVerses is string && data.paliVerses.size() <= 10000))
+        && (!('sinhalaMeaning' in data) || (data.sinhalaMeaning is string && data.sinhalaMeaning.size() <= 10000))
+        && (!('isFeatured' in data) || data.isFeatured is bool)
+        && (!('listenCount' in data) || data.listenCount is int)
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidFavorite(data, userId) {
+      return data.keys().hasAll(['userId', 'sermonId', 'createdAt'])
+        && data.userId == userId
+        && data.userId == request.auth.uid
+        && data.sermonId is string && data.sermonId.size() > 0
+        && data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    // Buddhist Sermons collection
+    match /sermons/{sermonId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() 
+                    && request.resource.data.userId == request.auth.uid 
+                    && isValidSermon(request.resource.data);
+      allow update: if isAuthenticated() 
+                    && (resource.data.userId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['listenCount']))
+                    && isValidSermon(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // User private favorites
+    match /users/{userId}/favorites/{sermonId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidFavorite(request.resource.data, userId);
+    }
+  }
+}

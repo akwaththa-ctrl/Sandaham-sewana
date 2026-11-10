@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "Sermon": {
+      "title": "Sermon",
+      "description": "Buddhist Pirith or Dhamma sermon",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the admin user who created the sermon"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the sermon or Pirith in Sinhala"
+        },
+        "thero": {
+          "type": "string",
+          "description": "Name of the presiding Thero or Maha Sangharatnaya"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category such as Maha Pirith, Dhamma Deshana, Bhavana, Seth Pirith"
+        },
+        "audioUrl": {
+          "type": "string",
+          "description": "Audio stream URL or MP3 link"
+        },
+        "videoUrl": {
+          "type": "string",
+          "description": "Video or YouTube URL"
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Duration in seconds"
+        },
+        "description": {
+          "type": "string",
+          "description": "Synopsis and details in Sinhala"
+        },
+        "paliVerses": {
+          "type": "string",
+          "description": "Sacred Pali verses text"
+        },
+        "sinhalaMeaning": {
+          "type": "string",
+          "description": "Sinhala meaning and translation of verses"
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "Flag indicating if the sermon is highlighted"
+        },
+        "listenCount": {
+          "type": "integer",
+          "description": "Total listener play count"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update"
+        }
+      },
+      "required": ["userId", "title", "thero", "category", "audioUrl", "createdAt", "updatedAt"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "User favorite sermon bookmark",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User ID who favorited"
+        },
+        "sermonId": {
+          "type": "string",
+          "description": "Identifier of the favorited sermon"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when favorited"
+        }
+      },
+      "required": ["userId", "sermonId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/sermons/{sermonId}": {
+      "schema": "Sermon",
+      "description": "Public Buddhist sermons readable by authenticated users and managed by admin"
+    },
+    "/users/{userId}/favorites/{sermonId}": {
+      "schema": "Favorite",
+      "description": "User private favorited sermons"
+    }
+  }
+}

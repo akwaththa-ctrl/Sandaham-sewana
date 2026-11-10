@@ -1,0 +1,6 @@
+{
+  "name": "සදහම් සෙවණ",
+  "description": "බෞද්ධ පිරිත්, ධර්ම දේශනා, භාවනා සහ සෙත් කවි ශ්‍රවණය සහ නැරඹීම සඳහා වූ සදහම් යෙදුම. ඇඩ්මින් කළමනාකරණය සමඟින්.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
